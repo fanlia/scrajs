@@ -54,7 +54,10 @@ class Browser {
       launchOptions,
     } = this.options
 
-    const browser = await puppeteer.launch(launchOptions)
+    const browser = await puppeteer.launch({
+      headless: 'new',
+      ...launchOptions,
+    })
     return browser
   }
 

@@ -1,1 +1,3 @@
 node_modules/
+!spiders/demo.js
+spiders/
