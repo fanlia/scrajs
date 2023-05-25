@@ -1,0 +1,33 @@
+{
+  "name": "scrajs",
+  "version": "1.0.0",
+  "description": "scrap web page by graphql",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "scrajs": "cli.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^4.7.1",
+    "@graphql-tools/schema": "^10.0.0",
+    "axios": "^1.4.0",
+    "chardet": "^1.5.1",
+    "cheerio": "^1.0.0-rc.12",
+    "commander": "^10.0.1",
+    "csv-stringify": "^6.4.0",
+    "currency.js": "^2.0.4",
+    "dayjs": "^1.11.7",
+    "graphql": "^16.6.0",
+    "lodash": "^4.17.21",
+    "module-from-string": "^3.3.0",
+    "puppeteer": "^20.3.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  }
+}
