@@ -2,9 +2,10 @@
   "name": "scrajs",
   "version": "1.0.0",
   "description": "scrap web page by graphql",
-  "main": "index.js",
+  "main": "src/graphql.js",
   "type": "module",
   "scripts": {
+    "start": "./cli.js api",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
