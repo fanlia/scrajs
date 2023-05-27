@@ -43,7 +43,7 @@ export const run = async ({
         createdAt: new Date(),
     }
     for (const w of workers) {
-      await w(message)
+      await w(message, context)
     }
   }
 
