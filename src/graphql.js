@@ -244,7 +244,7 @@ function resolve(from, to) {
   return resolvedUrl.toString();
 }
 
-const safetrim = (str) => str && str.trim()
+const safetrim = (str) => str && str.trim().replace(/\s+/g, ' ')
 
 const find = ({$, $el, baseUrl}, selector, move = [], n = {}) => {
   let start = selector ? $el.find(selector) : $el
