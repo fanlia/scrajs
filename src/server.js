@@ -10,6 +10,7 @@ export const startHTTP = async (options) => {
 
   const { url } = await startStandaloneServer(server, {
     listen: { port },
+    context: async ({ req }) => req,
   })
 
   console.log(`🚀 Server ready at ${url}`)

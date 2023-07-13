@@ -59,22 +59,31 @@ type Mutation {
   browser_closeall: Boolean
 }
 `
-
+const getRequest = (req) => {
+  const ua = req.headers['user-agent'];
+  return axios.create({
+    headers: {
+      'User-Agent': ua,
+    }
+  })
+}
 export const resolvers = {
   Query: {
     async echo(_, { data }) {
       console.log({ echo: data })
       return data
     },
-    async request(_, { url = {}}) {
-      const { data, status, statusText, headers } = await axios.request(url)
+    async request(_, { url = {}}, req) {
+      const request = getRequest(req)
+      const { data, status, statusText, headers } = await request(url)
       return { data, status, statusText, headers }
     },
     async puppeteer(_, { url = {}, script }) {
       return pptr(url, script)
     },
-    async page(_, { url = {}}) {
-      const response = await axios.request(url)
+    async page(_, { url = {}}, req) {
+      const request = getRequest(req)
+      const response = await request(url)
       let html = response.data
       if (typeof html !== 'string') throw new Error('not html page')
       const buf = Buffer.from(html)
