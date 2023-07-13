@@ -5,7 +5,7 @@
   "main": "src/graphql.js",
   "type": "module",
   "scripts": {
-    "start": "./cli.js api",
+    "start": "node-dev ./cli.js api",
     "test": "./cli.js run -s ../spiders/demo.js -w log"
   },
   "bin": {
@@ -30,5 +30,8 @@
     "puppeteer": "^20.3.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "devDependencies": {
+    "node-dev": "^8.0.0"
   }
 }
