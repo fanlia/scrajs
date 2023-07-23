@@ -94,7 +94,22 @@ export const resolvers = {
       }
 
       const baseUrl = response.config.url
-      return html2root(html, baseUrl)
+      const root = html2root(html, baseUrl)
+
+      const $refresh = root.$el.find('head meta[http-equiv=refresh]')
+      if ($refresh.length === 1) {
+        const content = $refresh.attr('content')
+        if (content) {
+          const url = content.split('=')[1]
+          if (url) {
+            const refresh_url = resolve(baseUrl, url)
+            if (refresh_url !== baseUrl) {
+              return this.page(null, { url: refresh_url }, req)
+            }
+          }
+        }
+      }
+      return root
     },
     async pptr(_, { url = {}}) {
       const response = await pptr(url)
