@@ -1,6 +1,12 @@
 # scrajs
 scrap web page by graphql
 
+## Deploy
+
+```sh
+NODE_ENV=production node cli.js api
+```
+
 ## Usage
 
 ```sh
