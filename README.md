@@ -4,6 +4,7 @@ scrap web page by graphql
 ## Usage
 
 ```sh
+npm i
 ./cli.js api
 ./cli.js run -s ../spiders/demo.js -w log
 ```
