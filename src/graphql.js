@@ -32,7 +32,7 @@ type HTML {
   show(selector: String move: [RelativeType]): JSON
 }
 
-enum DirectionEnum { parent next prev }
+enum DirectionEnum { parents parent next prev find }
 
 input RelativeType {
   direction: DirectionEnum!
