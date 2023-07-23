@@ -2,6 +2,7 @@
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { graphql } from 'graphql'
 
+import dayjs from 'dayjs'
 import axios from 'axios'
 import chardet from 'chardet'
 import * as cheerio from 'cheerio'
@@ -16,6 +17,8 @@ type HTML {
   children(selector: String! move: [RelativeType]): [HTML]
   text(selector: String move: [RelativeType]): String
   texts(selector: String move: [RelativeType]): [String]
+  date(selector: String move: [RelativeType], from: [String!], to: String): String
+  dates(selector: String move: [RelativeType], from: [String!], to: String): [String]
   html(selector: String move: [RelativeType] strips: [String]): String
   htmls(selector: String move: [RelativeType] strips: [String]): [String]
   attr(selector: String move: [RelativeType] name: String!): String
@@ -189,6 +192,20 @@ export const resolvers = {
     },
     async texts(root, { selector, move, n }) {
       return find(root, selector, move, n).map(({ $el }) => safetrim($el.text()))
+    },
+    async date(root, args) {
+      return singleHTML('dates', root, args)
+    },
+    async dates(root, { selector, move, n, from, to = 'YYYY-MM-DD' }) {
+      return find(root, selector, move, n).map(({ $el }) => {
+        let str = safetrim($el.text())
+        if (!str) return str
+        const t = dayjs(str, from)
+        if (t.isValid()) {
+          str = t.format(to)
+        }
+        return str
+      })
     },
     async html(root, args) {
       return singleHTML('htmls', root, args)
