@@ -112,6 +112,19 @@ export const resolvers = {
           }
         }
       }
+
+      const script = (root.$el.find('body > script').text() || '').trim()
+      const href_match = script.match(/window.location.href="(.*?)"/)
+
+      if (href_match) {
+        const url = href_match[1]
+        if (url) {
+          const refresh_url = resolve(baseUrl, url)
+          if (refresh_url !== baseUrl) {
+            return this.page(null, { url: refresh_url }, req)
+          }
+        }
+      }
       return root
     },
     async pptr(_, { url = {}}) {
