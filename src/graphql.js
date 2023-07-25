@@ -13,10 +13,12 @@ export const typeDefs = `
 scalar JSON
 
 type HTML {
+  echo(data: JSON!): JSON
   child(selector: String! move: [RelativeType]): HTML
   children(selector: String! move: [RelativeType]): [HTML]
   text(selector: String move: [RelativeType]): String
   texts(selector: String move: [RelativeType]): [String]
+  now(to: String): String
   date(selector: String move: [RelativeType], from: [String!], to: String): String
   dates(selector: String move: [RelativeType], from: [String!], to: String): [String]
   html(selector: String move: [RelativeType] strips: [String]): String
@@ -157,6 +159,9 @@ export const resolvers = {
   },
 
   HTML: {
+    async echo(_, { data }) {
+      return data
+    },
     async child(root, args) {
       return singleHTML('children', root, args)
     },
@@ -205,6 +210,9 @@ export const resolvers = {
     },
     async texts(root, { selector, move, n }) {
       return find(root, selector, move, n).map(({ $el }) => safetrim($el.text()))
+    },
+    async now(root, { to = 'YYYY-MM-DD' }) {
+      return dayjs().format(to)
     },
     async date(root, args) {
       return singleHTML('dates', root, args)
