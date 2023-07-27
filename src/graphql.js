@@ -2,6 +2,7 @@
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { graphql } from 'graphql'
 
+import https from 'node:https'
 import dayjs from 'dayjs'
 import axios from 'axios'
 import chardet from 'chardet'
@@ -69,7 +70,10 @@ const getRequest = (req) => {
   return axios.create({
     headers: {
       'User-Agent': ua,
-    }
+    },
+    httpsAgent: new https.Agent({
+      rejectUnauthorized: false,
+    }),
   })
 }
 export const resolvers = {
