@@ -1,6 +1,7 @@
 
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { graphql } from 'graphql'
+import iconv from 'iconv-lite'
 
 import https from 'node:https'
 import dayjs from 'dayjs'
@@ -65,7 +66,7 @@ type Mutation {
   browser_closeall: Boolean
 }
 `
-const getRequest = (req) => {
+const getRequest = (req, options = {}) => {
   const ua = req.headers['user-agent'];
   return axios.create({
     headers: {
@@ -74,6 +75,7 @@ const getRequest = (req) => {
     httpsAgent: new https.Agent({
       rejectUnauthorized: false,
     }),
+    ...options,
   })
 }
 export const resolvers = {
@@ -91,11 +93,12 @@ export const resolvers = {
       return pptr(url, script)
     },
     async page(_, { url = {}}, req) {
-      const request = getRequest(req)
+      const request = getRequest(req, {
+        responseType: 'arraybuffer',
+      })
       const response = await request(url)
-      let html = response.data
-      if (typeof html !== 'string') throw new Error('not html page')
-      const buf = Buffer.from(html)
+      let html = ''
+      const buf = Buffer.from(response.data, 'binary')
       const encoding = chardet.detect(buf)
       if (encoding !== 'UTF-8') {
         const decoder = new TextDecoder(encoding)
