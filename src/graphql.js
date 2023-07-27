@@ -93,19 +93,20 @@ export const resolvers = {
       return pptr(url, script)
     },
     async page(_, { url = {}}, req) {
+      let redirectUrl = null
       const request = getRequest(req, {
         responseType: 'arraybuffer',
+        beforeRedirect: (options, a) => {
+          redirectUrl = options.href
+        },
       })
       const response = await request(url)
-      let html = ''
       const buf = Buffer.from(response.data, 'binary')
       const encoding = chardet.detect(buf)
-      if (encoding !== 'UTF-8') {
-        const decoder = new TextDecoder(encoding)
-        html = decoder.decode(buf)
-      }
+      const decoder = new TextDecoder(encoding)
+      const html = decoder.decode(buf)
 
-      const baseUrl = response.config.url
+      const baseUrl = redirectUrl || response.config.url
       const root = html2root(html, baseUrl)
 
       const $refresh = root.$el.find('head meta[http-equiv=refresh]')
