@@ -255,16 +255,16 @@ export const resolvers = {
         return url && resolve(baseUrl, url)
       })
     },
-    async page(root, args) {
-      return singleHTML('pages', root, args)
+    async page(root, args, req) {
+      return singleHTML('pages', root, args, req)
     },
-    async pages(root, { selector, move, n, name, extraOptions }) {
+    async pages(root, { selector, move, n, name, extraOptions }, req) {
       return find(root, selector, move, n).map(({ $el, baseUrl }) => {
         const url = safetrim($el.attr(name).trim())
         return url && resolvers.Query.page(null, {
           ...extraOptions,
           url: resolve(baseUrl, url),
-        })
+        }, req)
       })
     },
     async pptr(root, args) {
@@ -282,11 +282,11 @@ export const resolvers = {
   },
 }
 
-const singleHTML = (funcname, root, args) => {
+const singleHTML = (funcname, root, args, req) => {
   return resolvers.HTML[funcname](root, {
     ...args,
     n: { to: 1 },
-  }).then(items => items[0])
+  }, req).then(items => items[0])
 }
 
 function html2root(html, baseUrl) {
