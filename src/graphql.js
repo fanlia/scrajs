@@ -23,6 +23,8 @@ type HTML {
   now(to: String): String
   date(selector: String move: [RelativeType], from: [String!], to: String): String
   dates(selector: String move: [RelativeType], from: [String!], to: String): [String]
+  segment(selector: String move: [RelativeType]): [String]
+  segments(selector: String move: [RelativeType]): [[String]]
   html(selector: String move: [RelativeType] strips: [String]): String
   htmls(selector: String move: [RelativeType] strips: [String]): [String]
   attr(selector: String move: [RelativeType] name: String!): String
@@ -234,6 +236,18 @@ export const resolvers = {
           str = t.format(to)
         }
         return str
+      })
+    },
+    async segment(root, args) {
+      return singleHTML('segments', root, args)
+    },
+    async segments(root, { selector, move, n }) {
+      return find(root, selector, move, n).map(({ $el }) => {
+        let str = safetrim($el.text())
+        if (!str) return str
+        const segmenter = new Intl.Segmenter('cn', {granularity: 'word' })
+        let output = Array.from(segmenter.segment(str)).filter(d => d.isWordLike).map(d => d.segment)
+        return output
       })
     },
     async html(root, args) {
