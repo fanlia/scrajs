@@ -10,6 +10,8 @@ import chardet from 'chardet'
 import * as cheerio from 'cheerio'
 import { pptr, bm } from './pptr.js'
 
+import nodemailer from 'nodemailer'
+
 export const typeDefs = `
 
 scalar JSON
@@ -66,6 +68,8 @@ type Mutation {
   browser_run(id: String! script: String!): JSON
   browser_fetch(id: String! args: FetchInput!): JSON
   browser_closeall: Boolean
+
+  send_mail(options: JSON!, mail: JSON!): JSON
 }
 `
 const getRequest = (req, options = {}) => {
@@ -165,6 +169,10 @@ export const resolvers = {
     },
     async browser_closeall() {
       return bm.closeall()
+    },
+    async send_mail(_, { options, mail }) {
+      const transporter = nodemailer.createTransport(options)
+      return transporter.sendMail(mail)
     },
   },
 
