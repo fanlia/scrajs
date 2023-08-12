@@ -11,6 +11,7 @@ import * as cheerio from 'cheerio'
 import { pptr, bm } from './pptr.js'
 
 import nodemailer from 'nodemailer'
+import { HttpsProxyAgent } from 'https-proxy-agent'
 
 export const typeDefs = `
 
@@ -48,10 +49,10 @@ input RelativeType {
 }
 
 type Query {
-  page(url: JSON!): HTML
+  page(url: JSON! proxy: JSON): HTML
   pptr(url: JSON!): HTML
   puppeteer(url: JSON! script: String): JSON
-  request(url: JSON!): JSON
+  request(url: JSON! proxy: JSON): JSON
   echo(data: JSON!): JSON
   browser_list(id: [String!]): [JSON]
 }
@@ -74,14 +75,18 @@ type Mutation {
 `
 const getRequest = (req, options = {}) => {
   const ua = req.headers['user-agent'];
+  const { proxy, ...other } = options
+  const httpsAgent = proxy ? new HttpsProxyAgent(proxy, {
+    rejectUnauthorized: false,
+  }) : new https.Agent({
+    rejectUnauthorized: false,
+  })
   return axios.create({
     headers: {
       'User-Agent': ua,
     },
-    httpsAgent: new https.Agent({
-      rejectUnauthorized: false,
-    }),
-    ...options,
+    httpsAgent,
+    ...other,
   })
 }
 export const resolvers = {
@@ -90,21 +95,22 @@ export const resolvers = {
       console.log({ echo: data })
       return data
     },
-    async request(_, { url = {}}, req) {
-      const request = getRequest(req)
+    async request(_, { url = {}, proxy }, req) {
+      const request = getRequest(req, { proxy })
       const { data, status, statusText, headers } = await request(url)
       return { data, status, statusText, headers }
     },
     async puppeteer(_, { url = {}, script }) {
       return pptr(url, script)
     },
-    async page(_, { url = {}}, req) {
+    async page(_, { url = {}, proxy }, req) {
       let redirectUrl = null
       const request = getRequest(req, {
         responseType: 'arraybuffer',
-        beforeRedirect: (options, a) => {
+        beforeRedirect: (options) => {
           redirectUrl = options.href
         },
+        proxy,
       })
       const response = await request(url)
       const buf = Buffer.from(response.data, 'binary')
