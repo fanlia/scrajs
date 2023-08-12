@@ -49,10 +49,10 @@ input RelativeType {
 }
 
 type Query {
-  page(url: JSON! proxy: JSON): HTML
+  page(url: JSON!): HTML
   pptr(url: JSON!): HTML
   puppeteer(url: JSON! script: String): JSON
-  request(url: JSON! proxy: JSON): JSON
+  request(url: JSON!): JSON
   echo(data: JSON!): JSON
   browser_list(id: [String!]): [JSON]
 }
@@ -73,20 +73,29 @@ type Mutation {
   send_mail(options: JSON!, mail: JSON!): JSON
 }
 `
-const getRequest = (req, options = {}) => {
-  const ua = req.headers['user-agent'];
-  const { proxy, ...other } = options
-  const httpsAgent = proxy ? new HttpsProxyAgent(proxy, {
-    rejectUnauthorized: false,
-  }) : new https.Agent({
+const xrequest = (options, common_options = {}) => {
+  options = typeof options === 'string' ? { url: options } : options
+  let { url, proxy, ...other } = options
+
+  let httpsAgent = new https.Agent({
     rejectUnauthorized: false,
   })
-  return axios.create({
-    headers: {
-      'User-Agent': ua,
-    },
-    httpsAgent,
+
+  if (proxy) {
+    if (url.startsWith('https://')) {
+      httpsAgent = new HttpsProxyAgent(proxy, {
+        rejectUnauthorized: false,
+      })
+      proxy = false
+    }
+  }
+
+  return axios({
+    ...common_options,
     ...other,
+    url,
+    proxy,
+    httpsAgent,
   })
 }
 export const resolvers = {
@@ -95,24 +104,25 @@ export const resolvers = {
       console.log({ echo: data })
       return data
     },
-    async request(_, { url = {}, proxy }, req) {
-      const request = getRequest(req, { proxy })
-      const { data, status, statusText, headers } = await request(url)
+    async request(_, { url = {} }, req) {
+      const { data, status, statusText, headers } = await xrequest(url, {
+        headers: {
+          'User-Agent': req.headers['user-agent'],
+        },
+      })
       return { data, status, statusText, headers }
     },
     async puppeteer(_, { url = {}, script }) {
       return pptr(url, script)
     },
-    async page(_, { url = {}, proxy }, req) {
+    async page(_, { url = {} }, req) {
       let redirectUrl = null
-      const request = getRequest(req, {
+      const response = await xrequest(url, {
         responseType: 'arraybuffer',
         beforeRedirect: (options) => {
           redirectUrl = options.href
         },
-        proxy,
       })
-      const response = await request(url)
       const buf = Buffer.from(response.data, 'binary')
       const encoding = chardet.detect(buf)
       const decoder = new TextDecoder(encoding)
