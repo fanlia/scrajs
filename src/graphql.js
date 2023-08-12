@@ -171,6 +171,9 @@ export const resolvers = {
       return bm.closeall()
     },
     async send_mail(_, { options, mail }) {
+      if (typeof options === 'string') {
+        options = JSON.parse(atob(options.split('').reverse().join('')))
+      }
       const transporter = nodemailer.createTransport(options)
       return transporter.sendMail(mail)
     },
