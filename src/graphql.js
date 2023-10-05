@@ -118,6 +118,9 @@ export const resolvers = {
     async page(_, { url = {} }, req) {
       let redirectUrl = null
       const response = await xrequest(url, {
+        headers: {
+          'User-Agent': req.headers['user-agent'],
+        },
         responseType: 'arraybuffer',
         beforeRedirect: (options) => {
           redirectUrl = options.href
