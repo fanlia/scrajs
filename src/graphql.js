@@ -107,7 +107,7 @@ export const resolvers = {
     async request(_, { url = {} }, req) {
       const { data, status, statusText, headers } = await xrequest(url, {
         headers: {
-          'User-Agent': req.headers['user-agent'],
+          'User-Agent': req?.headers['user-agent'],
         },
       })
       return { data, status, statusText, headers }
@@ -119,7 +119,7 @@ export const resolvers = {
       let redirectUrl = null
       const response = await xrequest(url, {
         headers: {
-          'User-Agent': req.headers['user-agent'],
+          'User-Agent': req?.headers['user-agent'],
         },
         responseType: 'arraybuffer',
         beforeRedirect: (options) => {
