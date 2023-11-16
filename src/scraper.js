@@ -146,7 +146,9 @@ export const request = (query) => async function* (url) {
       for (const data of page.children) {
         yield data
       }
-      next = page.next
+      if (page.next !== next) {
+        next = page.next
+      }
     } else {
       yield page
       next = null
