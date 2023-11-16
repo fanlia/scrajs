@@ -1,3 +1,4 @@
 node_modules/
 !spiders/demo.js
+!spiders/demo_queries.js
 spiders/

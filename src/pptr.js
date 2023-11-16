@@ -208,8 +208,6 @@ export const bm = new BrowserManager({
   // autoclose_lifetime: 60 * 1000,
 })
 
-bm.toggle_autoclose()
-
 export const pptr = async (options, script) => {
   const browser = new Browser(options)
 

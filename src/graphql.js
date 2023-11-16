@@ -8,7 +8,7 @@ import dayjs from 'dayjs'
 import axios from 'axios'
 import chardet from 'chardet'
 import * as cheerio from 'cheerio'
-import { pptr, bm } from './pptr.js'
+export { pptr, bm } from './pptr.js'
 
 import nodemailer from 'nodemailer'
 import { HttpsProxyAgent } from 'https-proxy-agent'
