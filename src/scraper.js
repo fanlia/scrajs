@@ -122,10 +122,10 @@ export const request = (query, options = {}) => async function* (url) {
 
 const delay = (wait = 1000) => new Promise(resolve => setTimeout(resolve, wait))
 
-const Base = () => {
+const Base = (options = {}) => {
   let i = 1
   return async function* (url) {
-    await delay(100)
+    await delay(options.delay || 100)
     yield [{i: i++}]
   }
 }
@@ -141,5 +141,5 @@ export const runQueries = (queries = [], options) => {
         }
       }
     }
-  }, Base())
+  }, Base(options))
 }
