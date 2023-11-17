@@ -10,18 +10,12 @@ export const commandRun = async ({
   const customContext = JSON.parse(contextJson)
 
   spiderPath = spiderPath.endsWith('.js') ? spiderPath : `../spiders/${spiderPath}.js`
-  const { context: defaultContext, workers: defaultWorkers, spiders } = await import(spiderPath)
-
-  const context = {
-    ...defaultContext,
-    ...customContext,
-  }
+  const options = await import(spiderPath)
 
   const workers = workerName.length === 0 ? defaultWorkers : workerName
 
   await run({
-    context,
-    spiders,
+    ...options,
     workers,
   })
 

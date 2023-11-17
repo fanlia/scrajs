@@ -1,7 +1,6 @@
 
-import { runQueries } from '../src/scraper.js'
-
-const query = `
+export const spiders = [
+`
 query q(
   $url: JSON!
 ) {
@@ -15,14 +14,7 @@ query q(
     next:url(selector: ".next a")
   }
 }
-`
+`,
+]
 
-const url = 'http://quotes.toscrape.com/tag/humor/'
-
-const queries = [query]
-
-const br = runQueries(queries)
-
-for await (const d of br(url)) {
-  console.log(d)
-}
+export const url = 'http://quotes.toscrape.com/tag/humor/'

@@ -8,9 +8,6 @@ export const jsonify = (options = {}) => {
     if (event === 'start') {
       json.write('[\n')
     } else if (event === 'item') {
-      if (data.count > 1) {
-        json.write(',\n')
-      }
       const line = JSON.stringify(data.data)
       json.write(line)
     } else if (event === 'end') {
