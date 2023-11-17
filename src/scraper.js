@@ -1,14 +1,18 @@
 
+import UserAgent from 'user-agents'
 import { g } from '../src/graphql.js'
 import { getWorkers } from '../workers/index.js'
 import * as util from './util.js'
 
 export const run = async ({
+  workers,
   url,
   spiders,
-  workers,
   transform = (d) => d[0],
+  ...options
 }) => {
+
+  const ua = new UserAgent().toString()
 
   workers = await getWorkers(workers)
 
@@ -33,7 +37,10 @@ export const run = async ({
 
   try {
 
-    const br = runQueries(spiders)
+    const br = runQueries(spiders, {
+      ...options,
+      ua,
+    })
 
     for await (const [line, ...d] of br(url)) {
       const count = line.i
@@ -60,15 +67,36 @@ export const run = async ({
   }
 }
 
-export const request = (query) => async function* (url) {
+export const request = (query, options = {}) => async function* (url) {
+
+  const {
+    ua,
+    requestOptions = {},
+  } = options
+
+  const {
+    headers = {},
+    proxy,
+  } = requestOptions
+
+  const headersWithUA = {
+    ...headers, 
+    'User-Agent': headers['User-Agent'] || ua,
+  }
 
   let next = url
   let i = 1
 
   do {
+    const variables = { url: {
+      url: next,
+      headers: headersWithUA,
+      proxy,
+    } }
+
     const response = await g({
       query,
-      variables: { url: next },
+      variables,
     })
 
     const page = response.data.page
@@ -102,8 +130,8 @@ const Base = () => {
   }
 }
 
-export const runQueries = (queries = []) => {
-  let funcs = queries.map(request)
+export const runQueries = (queries = [], options) => {
+  let funcs = queries.map(d => request(d, options))
 
   return funcs.reduceRight((m, f) => {
     return async function* (url) {
