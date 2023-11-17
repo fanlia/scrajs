@@ -8,7 +8,7 @@ export const run = async ({
   workers,
   url,
   spiders,
-  transform = (list) => list.reduceRight((m, d, i) => ({...m, ...Object.keys(d).reduce((mm, dd) => ({...mm, [`${list.length - i}.${dd}`]: d[dd]}), {})}), {}),
+  transform = (list, count) => list.reduceRight((m, d, i) => ({...m, ...Object.keys(d).reduce((mm, dd) => ({...mm, [`${list.length - i}.${dd}`]: d[dd]}), {})}), {no: count}),
   ...options
 }) => {
 
@@ -44,7 +44,7 @@ export const run = async ({
 
     for await (const [line, ...d] of br(url)) {
       const count = line.i
-      const data = transform(d, util)
+      const data = transform(d, count, util)
       await worker({
         event: 'item',
         data: {
