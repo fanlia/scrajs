@@ -7,7 +7,7 @@ export const run = async ({
   url,
   spiders,
   workers,
-  transform = (d) => d[1],
+  transform = (d) => d[0],
 }) => {
 
   workers = await getWorkers(workers)
@@ -35,11 +35,13 @@ export const run = async ({
 
     const br = runQueries(spiders)
 
-    for await (const d of br(url)) {
+    for await (const [line, ...d] of br(url)) {
+      const count = line.i
       const data = transform(d, util)
       await worker({
         event: 'item',
         data: {
+          count,
           data,
         },
       })
