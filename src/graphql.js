@@ -4,7 +4,7 @@ import { graphql } from 'graphql'
 import iconv from 'iconv-lite'
 
 import https from 'node:https'
-import dayjs from 'dayjs'
+import { dayjs } from './util.js'
 import axios from 'axios'
 import chardet from 'chardet'
 import * as cheerio from 'cheerio'
