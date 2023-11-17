@@ -8,7 +8,7 @@ export const run = async ({
   workers,
   url,
   spiders,
-  transform = (d) => d[0],
+  transform = (list) => list.reduceRight((m, d, i) => ({...m, ...Object.keys(d).reduce((mm, dd) => ({...mm, [`${list.length - i}.${dd}`]: d[dd]}), {})}), {}),
   ...options
 }) => {
 

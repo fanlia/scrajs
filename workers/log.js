@@ -1,4 +1,4 @@
 
 export const worker = async (data, context) => {
-  console.log(data)
+  console.dir(data, {depth: 5})
 }
