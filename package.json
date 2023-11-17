@@ -2,7 +2,7 @@
   "name": "scrajs",
   "version": "1.0.0",
   "description": "scrap web page by graphql",
-  "main": "src/graphql.js",
+  "main": "src/lib.js",
   "type": "module",
   "scripts": {
     "start": "node-dev ./cli.js api",
