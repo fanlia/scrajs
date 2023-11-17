@@ -18,13 +18,13 @@ npm i
 ```graphql
 
 query show  {
-  page(url: "http://quotes.toscrape.com") {
+  page(url: "https://quotes.toscrape.com") {
     show
   }
 }
 
 query q  {
-  page(url: "http://quotes.toscrape.com/") {
+  page(url: "https://quotes.toscrape.com/") {
     children(selector: ".quote") {
       text(selector: ".text")
 
@@ -44,7 +44,7 @@ query request {
 
 query pptr {
   pptr(url: {
-    url: "http://quotes.toscrape.com"
+    url: "https://quotes.toscrape.com"
   }) {
     children(selector: "a") {
       text
@@ -55,7 +55,7 @@ query pptr {
 
 query puppeteer {
   puppeteer(
-    url: "http://quotes.toscrape.com"
+    url: "https://quotes.toscrape.com"
     script: "const title = await page.title(); return { title }"
   )
 }
@@ -63,11 +63,11 @@ query puppeteer {
 mutation browser {
   browser_open(
     id: "quotes"
-    url: "http://quotes.toscrape.com"
+    url: "https://quotes.toscrape.com"
   )
   browser_run(id: "quotes" script: "page.title()")
   browser_fetch(id: "quotes" args: {
-    url: "http://quotes.toscrape.com/page/2/"
+    url: "https://quotes.toscrape.com/page/2/"
   })
   browser_close(id: "quotes")
 }
