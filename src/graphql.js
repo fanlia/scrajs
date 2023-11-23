@@ -1,4 +1,5 @@
 
+import UserAgent from 'user-agents'
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { graphql } from 'graphql'
 import iconv from 'iconv-lite'
@@ -55,6 +56,7 @@ type Query {
   request(url: JSON!): JSON
   echo(data: JSON!): JSON
   browser_list(id: [String!]): [JSON]
+  default_user_agent: String
 }
 
 input FetchInput {
@@ -73,9 +75,11 @@ type Mutation {
   send_mail(options: JSON!, mail: JSON!): JSON
 }
 `
-const xrequest = (options, common_options = {}) => {
+const UA = new UserAgent(/chrome/i).toString()
+
+const xrequest = (options, common_options = {}, req) => {
   options = typeof options === 'string' ? { url: options } : options
-  let { url, proxy, ...other } = options
+  let { url, headers = {}, proxy, ...other } = options
 
   let httpsAgent = new https.Agent({
     rejectUnauthorized: false,
@@ -90,26 +94,29 @@ const xrequest = (options, common_options = {}) => {
     }
   }
 
+  headers['User-Agent'] = headers['User-Agent'] || req?.headers['user-agent'] || UA
+
   return axios({
     ...common_options,
     ...other,
     url,
+    headers,
     proxy,
     httpsAgent,
   })
 }
+
 export const resolvers = {
   Query: {
     async echo(_, { data }) {
       console.log({ echo: data })
       return data
     },
+    async default_user_agent() {
+      return UA
+    },
     async request(_, { url = {} }, req) {
-      const { data, status, statusText, headers } = await xrequest(url, {
-        headers: {
-          'User-Agent': req?.headers['user-agent'],
-        },
-      })
+      const { data, status, statusText, headers } = await xrequest(url, {}, req)
       return { data, status, statusText, headers }
     },
     async puppeteer(_, { url = {}, script }) {
@@ -118,14 +125,11 @@ export const resolvers = {
     async page(_, { url = {} }, req) {
       let redirectUrl = null
       const response = await xrequest(url, {
-        headers: {
-          'User-Agent': req?.headers['user-agent'],
-        },
         responseType: 'arraybuffer',
         beforeRedirect: (options) => {
           redirectUrl = options.href
         },
-      })
+      }, req)
       const buf = Buffer.from(response.data, 'binary')
       const encoding = chardet.detect(buf)
       const decoder = new TextDecoder(encoding)

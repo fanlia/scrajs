@@ -1,5 +1,4 @@
 
-import UserAgent from 'user-agents'
 import { g } from '../src/graphql.js'
 import { getWorkers } from '../workers/index.js'
 import * as util from './util.js'
@@ -11,8 +10,6 @@ export const run = async ({
   transform = (list, count) => list.reduceRight((m, d, i) => ({...m, ...Object.keys(d).reduce((mm, dd) => ({...mm, [`${list.length - i}.${dd}`]: d[dd]}), {})}), {'no.': count}),
   ...options
 }) => {
-
-  const ua = new UserAgent().toString()
 
   workers = await getWorkers(workers)
 
@@ -37,10 +34,7 @@ export const run = async ({
 
   try {
 
-    const br = runQueries(spiders, {
-      ...options,
-      ua,
-    })
+    const br = runQueries(spiders, options)
 
     for await (const [line, ...d] of br(url)) {
       const count = line.i
@@ -70,28 +64,16 @@ export const run = async ({
 export const request = (query, options = {}) => async function* (url) {
 
   const {
-    ua,
     requestOptions = {},
   } = options
-
-  const {
-    headers = {},
-    proxy,
-  } = requestOptions
-
-  const headersWithUA = {
-    ...headers, 
-    'User-Agent': headers['User-Agent'] || ua,
-  }
 
   let next = url
   let i = 1
 
   do {
     const variables = { url: {
+      ...requestOptions,
       url: next,
-      headers: headersWithUA,
-      proxy,
     } }
 
     const response = await g({
