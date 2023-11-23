@@ -355,8 +355,10 @@ function resolve(from, to) {
     const { pathname, search, hash } = resolvedUrl;
     return pathname + search + hash;
   }
-  return resolvedUrl.toString();
+  return decodeURI(resolvedUrl.toString());
 }
+
+// console.log(resolve('https://www.163.com', 'https://www.baidu.com/q?keyword=%E4%BD%A0%E5%A5%BD'))
 
 const safetrim = (str) => str && str.trim().replace(/\s+/g, ' ')
 
