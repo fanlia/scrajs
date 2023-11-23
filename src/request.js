@@ -79,6 +79,10 @@ export const request = (g, query, options = {}) => async function* (url) {
       variables,
     })
 
+    if (response.errors) {
+      throw response.errors[0]
+    }
+
     const page = response.data.page
 
     if (!page) {
