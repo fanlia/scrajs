@@ -6,6 +6,7 @@ export const runSpider = async ({
   url,
   spiders,
   transform = DefaultTransform,
+  limit = Infinity,
   ...options
 }, g, util = {}) => {
 
@@ -43,6 +44,9 @@ export const runSpider = async ({
           data,
         },
       })
+      if (count >= limit) {
+        break
+      }
     }
   } finally {
     const endAt = Date.now()
