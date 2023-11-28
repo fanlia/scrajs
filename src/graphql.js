@@ -242,7 +242,7 @@ export const resolvers = {
             level: $el.parents().length,
             selector: tag,
             text,
-            attributes: attributes.length > 0 ? attributes : '',
+            attributes,
           }
         })
       })
