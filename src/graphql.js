@@ -25,8 +25,8 @@ type HTML {
   text(selector: String move: [RelativeType]): String
   texts(selector: String move: [RelativeType]): [String]
   now(to: String): String
-  date(selector: String move: [RelativeType], from: [String!], to: String): String
-  dates(selector: String move: [RelativeType], from: [String!], to: String): [String]
+  date(selector: String move: [RelativeType], from: [String!], to: String, lang: String): String
+  dates(selector: String move: [RelativeType], from: [String!], to: String, lang: String): [String]
   segment(selector: String move: [RelativeType]): [String]
   segments(selector: String move: [RelativeType]): [[String]]
   html(selector: String move: [RelativeType] strips: [String]): String
@@ -261,11 +261,11 @@ export const resolvers = {
     async date(root, args) {
       return singleHTML('dates', root, args)
     },
-    async dates(root, { selector, move, n, from, to = 'YYYY-MM-DD' }) {
+    async dates(root, { selector, move, n, from, to = 'YYYY-MM-DD', lang }) {
       return find(root, selector, move, n).map(({ $el }) => {
         let str = safetrim($el.text())
         if (!str) return str
-        const t = dayjs(str, from)
+        const t = dayjs(str, from, lang)
         if (t.isValid()) {
           str = t.format(to)
         }
