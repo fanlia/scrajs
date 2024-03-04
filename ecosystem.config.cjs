@@ -14,7 +14,7 @@ module.exports = {
     interpreter: process.env.NVM_DIR + '/nvm-exec',
     interpreter_args: 'node',
     env: {
-      NODE_VERSION: 18,
+      NODE_VERSION: 20,
       PORT: 3456,
     },
   }],
